@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+   name: fe
+   annotations:
+     ncp/no_snat: "true"
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: fe-server
+  namespace: fe
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: fe-server
+        tier: frontend
+    spec:
+      containers:
+      - name: fe-server
+        image: sushilk/planespotter-fe
+        ports:
+        - containerPort: 5000
+        env:
+          - name: PLANESPOTTER_API_ENDPOINT
+            value: "planespotter-svc.planespotter"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fe-server
+  namespace: fe
+  labels:
+    app: fe-server
+    tier: frontend
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 5000
+  selector:
+    app: fe-server
+    tier: frontend

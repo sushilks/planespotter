@@ -3,7 +3,7 @@ kind: Namespace
 metadata:
    name: planespotter
 ---
-apiVersion: apps/v1beta2
+apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
   name: planespotter-app
@@ -30,6 +30,9 @@ spec:
         volumeMounts:
         - name: config-volume
           mountPath: /app/config
+        env:
+          - name: DEBUG_MODE
+            value: "True"
       volumes:
         - name: config-volume
           configMap:
@@ -42,11 +45,11 @@ metadata:
   namespace: planespotter
 data:
   config.cfg: |
-    DATABASE_URL = 'mysql.yves.local'
+    DATABASE_URL = 'mysql-svc.mysql'
     DATABASE_USER = 'planespotter'
     DATABASE_PWD = 'VMware1!'
     DATABASE = 'planespotter'
-    REDIS_HOST = '10.114.209.211'
+    REDIS_HOST = 'redis-server.redis'
     REDIS_PORT = '6379'
 ---
 apiVersion: v1
